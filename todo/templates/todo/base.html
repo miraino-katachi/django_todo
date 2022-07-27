@@ -19,8 +19,8 @@
       </button>
       <nav class="navbar-collapse collapse" id="navbarNav">
         <ul class="navbar-nav">
-          <li class="nav-item"><a class="nav-link {% if CRUD == '一覧' %} active {% endif %}" href="{% url 'home' %}">作業一覧</a></li>
-          <li class="nav-item"><a class="nav-link {% if CRUD == '登録' %} active {% endif %}" href="{% url 'new' %}">作業登録</a></li>
+          <li class="nav-item"><a class="nav-link {% if crud == '一覧' %} active {% endif %}" href="{% url 'list' %}">作業一覧</a></li>
+          <li class="nav-item"><a class="nav-link {% if crud == '登録' %} active {% endif %}" href="{% url 'new' %}">作業登録</a></li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" type="button" data-bs-toggle="dropdown" aria-expanded="false">
               {{ request.user }}さん

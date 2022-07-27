@@ -45,7 +45,6 @@ class TodoForm(forms.ModelForm):
             'user': '担当者',
             'expire_date': '期限日',
         }
-
         error_messages = {
             "item_name": {
                 "required": "項目名が入力されていません",
