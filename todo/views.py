@@ -4,9 +4,8 @@
 # ショートカット
 from django.shortcuts import render,redirect,get_object_or_404
 # クラスビュー
-from django.views.generic import ListView
-from django.views.generic import CreateView
-from django.views.generic import UpdateView
+from django.views.generic import ListView,CreateView,UpdateView
+from django.contrib.auth.views import LoginView,LogoutView
 # フォーム関連
 from django import forms
 from .forms import LoginForm,TodoForm
@@ -22,46 +21,16 @@ from .models import Todo
 from django.db.models import Q
 from django.utils import timezone
 
-# ログイン画面
-def Login(request):
-    if request.user.is_authenticated:
-        return redirect('/')
-    params = {'message': '', 'form': None}
-    # POST通信だった場合
-    if request.method == 'POST':
-        # POSTされたフォームを取得する
-        form = LoginForm(request.POST)
-        # バリデーションを行う
-        if form.is_valid():
-            pass
-        else:
-            params['form'] = form
-            return render(request, 'todo/login.html', params)
-        # idとpasswordを取得して認証を行う
-        ID = request.POST.get('username')
-        Pass = request.POST.get('password')
-        # 認証チェック
-        user = authenticate(username=ID, password=Pass)
-        # 認証が通った場合
-        if user:
-            login(request,user)
-            return HttpResponseRedirect(reverse('list'))
-        else:
-            # フォームを表示する
-            params['form'] = form
-            params['message'] = 'IDかパスワードに誤りがあります'
-            # ログイン画面に移行
-            return render(request, 'todo/login.html',params)
-    # GET通信だった場合
-    else:
-        params = {'message': '', 'form': None}
-        # フォームを表示する
-        params['form'] = LoginForm()
-        # ログイン画面に移行
-        return render(request, 'todo/login.html',params)
-
+###
 # クラスビュー
-
+###
+# ログイン
+class Login(LoginView):
+    template_name = 'todo/login.html'
+    form_class = LoginForm
+# ログアウト
+class Logout(LoginRequiredMixin, LogoutView):
+    template_name = 'todo/login.html'
 # 一覧画面
 class TodoList(LoginRequiredMixin, ListView):
     # Todoテーブルより呼び出す
@@ -80,7 +49,7 @@ class TodoList(LoginRequiredMixin, ListView):
                 Q(item_name__icontains=search_param) | Q(user__username__icontains=search_param), \
                 user=self.request.user)
         return query_result # 結果を返す
-
+###
 # 新規作成画面
 class TodoCreateView(LoginRequiredMixin, CreateView):
     # Todo
@@ -102,7 +71,7 @@ class TodoCreateView(LoginRequiredMixin, CreateView):
         todo_form.registration_date = timezone.now() # 登録日を本日にセット
         todo_form.save() # 保存する
         return redirect('/')
-
+###
 # 更新画面
 class TodoUpdateView(LoginRequiredMixin, UpdateView):
     # Todo
@@ -113,15 +82,60 @@ class TodoUpdateView(LoginRequiredMixin, UpdateView):
     template_name = "todo/edit.html"
     # 新規登録成功時のURL
     success_url = "/"
+    # フォームで表示するときの完了チェック
+    is_finished = True
     # 編集画面として表示する
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        print(queryset)
-        return queryset.filter(user_id=self.request.user)
-
-
+    # 編集する予定のTodoを取得して、完了日が入力されているかチェックする
+    def get_object(self):
+        query_result = Todo.objects.get(pk=self.kwargs["pk"]) # データを取得する
+        if query_result.finished_date is None:
+            self.is_finished = False
+        return query_result
+    # フォームの完了日のvalueを編集する
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'].fields['is_finished'] = forms.BooleanField(label='完了',initial=self.is_finished, required=False)
+        context['crud'] = '編集'
+        return context
+###
+# 削除処理　*POSTのみ
+class TodoDeleteView(LoginRequiredMixin, UpdateView):
+    # Todo
+    model = Todo
+    # フィールドの指定
+    fields = ('is_deleted', )
+    # 削除処理成功時のURL
+    success_url = "/"
+    # 削除対象であり、ログイン中のユーザーのIDのTodoを取得
+    def get_object(self):
+        return get_object_or_404(Todo, pk=self.request.POST["id"], user=self.request.user)
+    # 削除フィールドを更新する
+    def form_valid(self, form):
+        todo_form = form.save(commit=False)
+        todo_form.is_deleted = True # 削除処理
+        todo_form.save() # 保存する
+        return redirect('/')
+###
+# 完了処理　*POSTのみ
+class TodoCompleteView(LoginRequiredMixin, UpdateView):
+    # Todo
+    model = Todo
+    # フィールドの指定
+    fields = ('finished_date', )
+    # 完了処理成功時のURL
+    success_url = "/"
+    # 完了対象であり、ログイン中のユーザーのIDのTodoを取得
+    def get_object(self):
+        return get_object_or_404(Todo, pk=self.request.POST["id"], user=self.request.user)
+    # 完了日フィールドを更新する
+    def form_valid(self, form):
+        todo_form = form.save(commit=False)
+        todo_form.finished_date = timezone.now() # 削除処理
+        todo_form.save() # 保存する
+        return redirect('/')
+###
 # 関数ビュー
-
+###
 # 一覧画面
 # @login_required
 # def home(request):
@@ -170,27 +184,65 @@ class TodoUpdateView(LoginRequiredMixin, UpdateView):
 #     return render(request, 'todo/edit.html', params)
 
 # ログイン時のみ、削除処理を行う
-@login_required
-def delete(request):
-    id = request.POST.get('id')
-    todo = Todo.objects.get(pk=id)
-    todo.is_deleted = 1
-    todo.save()
-    return redirect('/')
+# @login_required
+# def delete(request):
+#     id = request.POST.get('id')
+#     todo = Todo.objects.get(pk=id)
+#     todo.is_deleted = 1
+#     todo.save()
+#     return redirect('/')
 
 # ログイン時のみ、完了処理を行う
-@login_required
-def complete(request):
-    id = request.POST.get('id')
-    print(id)
-    todo = Todo.objects.get(pk=id)
-    todo.finished_date = timezone.now()
-    todo.save()
-    return redirect('/')
+# @login_required
+# def complete(request):
+#     id = request.POST.get('id')
+#     print(id)
+#     todo = Todo.objects.get(pk=id)
+#     todo.finished_date = timezone.now()
+#     todo.save()
+#     return redirect('/')
+
+# ログイン画面
+# def Login(request):
+#     if request.user.is_authenticated:
+#         return redirect('/')
+#     params = {'message': '', 'form': None}
+#     # POST通信だった場合
+#     if request.method == 'POST':
+#         # POSTされたフォームを取得する
+#         form = LoginForm(request.POST)
+#         # バリデーションを行う
+#         if form.is_valid():
+#             pass
+#         else:
+#             params['form'] = form
+#             return render(request, 'todo/login.html', params)
+#         # idとpasswordを取得して認証を行う
+#         ID = request.POST.get('username')
+#         Pass = request.POST.get('password')
+#         # 認証チェック
+#         user = authenticate(username=ID, password=Pass)
+#         # 認証が通った場合
+#         if user:
+#             login(request,user)
+#             return HttpResponseRedirect(reverse('list'))
+#         else:
+#             # フォームを表示する
+#             params['form'] = form
+#             params['message'] = 'IDかパスワードに誤りがあります'
+#             # ログイン画面に移行
+#             return render(request, 'todo/login.html',params)
+#     # GET通信だった場合
+#     else:
+#         params = {'message': '', 'form': None}
+#         # フォームを表示する
+#         params['form'] = LoginForm()
+#         # ログイン画面に移行
+#         return render(request, 'todo/login.html',params)
 
 #ログアウト
-@login_required
-def Logout(request):
-    logout(request)
-    # ログイン画面遷移
-    return HttpResponseRedirect(reverse('Login'))
+# @login_required
+# def Logout(request):
+#     logout(request)
+#     # ログイン画面遷移
+#     return HttpResponseRedirect(reverse('Login'))
