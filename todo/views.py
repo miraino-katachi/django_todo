@@ -97,9 +97,6 @@ class TodoUpdateView(LoginRequiredMixin, UpdateView):
         context['form'].fields['is_finished'] = forms.BooleanField(label='完了',initial=self.is_finished, required=False)
         context['crud'] = '編集'
         return context
-    def form_valid(self, form):
-        print("dou")
-        return redirect('../')
 ###
 # 削除処理　*POSTのみ
 class TodoDeleteView(LoginRequiredMixin, UpdateView):
