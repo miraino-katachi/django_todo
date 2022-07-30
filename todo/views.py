@@ -81,7 +81,7 @@ class TodoUpdateView(LoginRequiredMixin, UpdateView):
     # ページの設定
     template_name = "todo/edit.html"
     # 新規登録成功時のURL
-    success_url = "/"
+    success_url = "../"
     # フォームで表示するときの完了チェック
     is_finished = True
     # 編集画面として表示する
@@ -98,7 +98,7 @@ class TodoUpdateView(LoginRequiredMixin, UpdateView):
         context['crud'] = '編集'
         return context
     def form_valid(self, form):
-        return redirect('/')
+        return redirect('../')
 ###
 # 削除処理　*POSTのみ
 class TodoDeleteView(LoginRequiredMixin, UpdateView):
