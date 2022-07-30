@@ -98,6 +98,7 @@ class TodoUpdateView(LoginRequiredMixin, UpdateView):
         context['crud'] = '編集'
         return context
     def form_valid(self, form):
+        print("dou")
         return redirect('../')
 ###
 # 削除処理　*POSTのみ
