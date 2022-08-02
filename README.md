@@ -1,8 +1,6 @@
 # 【Django】共有TODOリスト
 
-デモサイトはこちらです。動作の確認をこちらでしていただけます。
-
-<a href="https://1110tk.pythonanywhere.com/" target="_blank">pythonanywhere.com</a>
+デモサイトは<a href="https://1110tk.pythonanywhere.com/" target="_blank">こちら</a>です。
 
 ```
 上記のユーザー名とパスワードは、
