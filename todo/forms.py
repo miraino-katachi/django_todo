@@ -3,6 +3,7 @@
 ###
 # フォーム
 from django import forms
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth.forms import AuthenticationForm
 # モデル
 from django.contrib.auth.models import User
@@ -12,7 +13,6 @@ from django.utils import timezone
 
 ###
 # ログインフォーム
-# クラスビュー用
 class LoginForm(AuthenticationForm):
     username = forms.CharField(label='ユーザー名', max_length=50)
     password = forms.CharField(label='パスワード', widget=forms.PasswordInput())
@@ -21,38 +21,17 @@ class LoginForm(AuthenticationForm):
        # それぞれのフォームに対してクラスを付与する
        self.fields['username'].widget.attrs['class'] = 'form-control mb-3'
        self.fields['password'].widget.attrs['class'] = 'form-control mb-3'
-###
-# ログインフォーム
-# class LoginForm(forms.Form):
-#     username = forms.CharField(label='ユーザー名', max_length=50)
-#     password = forms.CharField(label='パスワード', widget=forms.PasswordInput())
-#     def __init__(self,*args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         for field in self.fields:
-#             self.fields[field].widget.attrs["class"] = "form-control mb-3"
 
-# クラスビュー用
-class UserForm(forms.ModelForm):
+###
+# ユーザーの新規登録用
+class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = User
-        fields = ('username', 'password')
-        labels = {
-            'username': 'ID',
-            'password': 'Password'
-        }
-        error_messages = {
-            'username': {
-                'required': '必須です!',
-            },
-            'password': {
-                'required': '必須です!',
-            }
-        }
+        fields = ('username', 'password1', 'password2')
     def __init__(self,*args, **kwargs):
         super().__init__(*args, **kwargs)
-        print("testan")
         for field in self.fields:
-            self.fields[field].widget.attrs["class"] = "form-control"
+            self.fields[field].widget.attrs["class"] = "form-control mb-3"
 
 ###
 # Todoフォーム
@@ -121,3 +100,15 @@ class TodoForm(forms.ModelForm):
         else:
             cleaned_data['finished_date'] = None
         return cleaned_data
+
+###
+# 関数ビュー
+###
+# ログインフォーム
+# class LoginForm(forms.Form):
+#     username = forms.CharField(label='ユーザー名', max_length=50)
+#     password = forms.CharField(label='パスワード', widget=forms.PasswordInput())
+#     def __init__(self,*args, **kwargs):
+#         super().__init__(*args, **kwargs)
+#         for field in self.fields:
+#             self.fields[field].widget.attrs["class"] = "form-control mb-3"

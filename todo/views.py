@@ -6,9 +6,10 @@ from django.shortcuts import render,redirect,get_object_or_404
 # クラスビュー
 from django.views.generic import ListView,CreateView,UpdateView
 from django.contrib.auth.views import LoginView,LogoutView
+from django.contrib.auth.forms import UserCreationForm
 # フォーム関連
 from django import forms
-from .forms import LoginForm,TodoForm
+from .forms import LoginForm,TodoForm,CustomUserCreationForm
 # ログイン・ログアウト処理に利用
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -16,7 +17,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 # リダイレクト、レスポンス、戻る処理
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
+from django.urls import reverse_lazy
 # モデル関連
+from django.contrib.auth.models import User
 from .models import Todo
 from django.db.models import Q
 from django.utils import timezone
@@ -24,10 +27,23 @@ from django.utils import timezone
 ###
 # クラスビュー
 ###
+#会員登録ページに関する処理
+class UserCreateView(CreateView):
+    template_name = 'todo/login.html'
+    form_class = CustomUserCreationForm
+    success_url = reverse_lazy('Login')
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['crud'] = '新規登録' # 画面に渡すパラメータにセット
+        return context
 # ログイン
 class Login(LoginView):
     template_name = 'todo/login.html'
     form_class = LoginForm
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['crud'] = 'ログイン' # 画面に渡すパラメータにセット
+        return context
 # ログアウト
 class Logout(LoginRequiredMixin, LogoutView):
     template_name = 'todo/login.html'

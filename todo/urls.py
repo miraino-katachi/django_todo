@@ -10,6 +10,7 @@ urlpatterns = [
     path('edit/<int:pk>', views.TodoUpdateView.as_view(), name='edit'),
     path('complete', views.TodoCompleteView.as_view(), name='complete'),
     path('delete', views.TodoDeleteView.as_view(), name='delete'),
+    path('register', views.UserCreateView.as_view(), name='register'),
     # 関数ビュー
     # path('login', views.Login, name='Login'),
     # path('', views.home, name='home'),
