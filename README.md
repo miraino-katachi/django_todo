@@ -17,6 +17,11 @@
 2. Gitのインストール
 <a href="https://tutorial.djangogirls.org/ja/installation/#git" target="_blank">こちら</a>のページを参照して行ってください。
 
+3. プロジェクトをコピーするためのフォルダをひとつ作成してください。コマンドプロンプト（あるいはシェル）のカレントディレクトリをそのフォルダ内にするように設定します。
+```
+: cd フォルダまでのアドレス
+```
+
 3. GitHubのURLからローカルにプロジェクトをコピーするために、以下のコマンドをコマンドプロンプトから実行してください。以下、コマンドの実行(:)はWindowsであればコマンドプロンプト、Macであればシェルから実行するコマンドを意味します。  
 ```
 : git clone https://github.com/miraino-katachi/django_todo.git
