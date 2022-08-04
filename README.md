@@ -34,17 +34,17 @@
 **: pip install -r requirements.txt**
 
 8. データベースにTodoモデルを作成します。  
-**:python manage.py makemigrations todo**
+**: python manage.py makemigrations todo**
 
 9. データベースのマイグレーションを行います。  
-**:python manage.py migrate**
+**: python manage.py migrate**
 
 10. 管理ユーザーを設定します。  
-**:python manage.py createsuperuser**  
+**: python manage.py createsuperuser**  
 ユーザー名、メールアドレス、パスワードを設定してください。
 
 11. サーバーを開始します。  
-**python manage.py runserver**
+**: python manage.py runserver**
 
 12. 早速、以下のＵＲＬからコンテンツにアクセスしてみましょう。  
 **http://127.0.0.1:8000/**
