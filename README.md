@@ -9,8 +9,10 @@
 です。
 ```
 
-## ローカルでTodoを動かしてみましょう。
+## ローカルでTODOアプリを動かしてみましょう。  
 
+上のURLからTODOアプリを見ることはできますが、以下の手順に従えば、ご自身のパソコン内からアプリを動かすこともできます。コードを変更して、挙動がどう変わるのかもご確認頂けます。  
+  
 1. Pythonのインストール
 <a href="https://tutorial.djangogirls.org/ja/python_installation/" target="_blank">こちら</a>のページを参照して行ってください。
 
