@@ -44,8 +44,7 @@
 ```
 
 6. 作成した仮想環境を有効にします。  
-仮想環境の必要性と、各OS毎の仮想環境を有効にする方法については<a href="https://camp.trainocate.co.jp/magazine/venv-python/" target="_blank">こちら</a>のサイトをご参照ください。
-
+仮想環境の必要性や、各OS毎の仮想環境を有効にする方法について説明している、<a href="https://camp.trainocate.co.jp/magazine/venv-python/" target="_blank">こちら</a>のサイトをご参照ください。
 
 7. Djangoを動作させるのに、必要なモジュールをインストールします。  
 ```
